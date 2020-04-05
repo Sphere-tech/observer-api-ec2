@@ -1,0 +1,40 @@
+version: '2.1'
+
+services:
+  localstack:
+    container_name: "${LOCALSTACK_DOCKER_NAME-localstack}"
+    image: localstack/localstack
+    ports:
+      - "4567-4599:4567-4599"
+      - "${PORT_WEB_UI-8080}:${PORT_WEB_UI-8080}"
+    environment:
+      - SERVICES=${SERVICES- }
+      - DEBUG=${DEBUG- }
+      - DATA_DIR=${DATA_DIR- }
+      - PORT_WEB_UI=${PORT_WEB_UI- }
+      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR- }
+      - KINESIS_ERROR_PROBABILITY=${KINESIS_ERROR_PROBABILITY- }
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+  ec2-provisioning:
+    image: amazon/aws-cli
+    command: "--endpoint-url=http://localstack:4597 ec2 run-instances --image-id ami-xxxxxxxx --count 500 --instance-type t2.micro --key-name MyKeyPair --region us-west-2"
+    links:
+      - localstack
+    depends_on:
+      - localstack
+    env_file:
+      - ./.env.ec2-provisioning
+
+
+  observer-api-ec2:
+    container_name: "observer-api-ec2"
+    build: ./observer-api-ec2
+    volumes:
+      - ./observer-api-ec2/:/app
+    ports:
+      - 8081:80
+    env_file:
+      - ./.env.observer-api-ec2
