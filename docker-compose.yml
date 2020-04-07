@@ -20,7 +20,7 @@ services:
 
   ec2-provisioning:
     image: amazon/aws-cli
-    command: "--endpoint-url=http://localstack:4597 ec2 run-instances --image-id ami-xxxxxxxx --count 500 --instance-type t2.micro --key-name MyKeyPair --region us-west-2"
+    command: "--endpoint-url=http://localstack:4597 ec2 run-instances --image-id ami-xxxxxxxx --count 1000 --monitoring Enabled=true --instance-type t2.micro --key-name MyKeyPair --region us-west-2"
     links:
       - localstack
     depends_on:

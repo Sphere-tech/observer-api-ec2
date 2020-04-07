@@ -5,4 +5,4 @@ RUN pip install --upgrade pip && \
 
 COPY ./ /app
 
-CMD [ "gunicorn", "-w", "4", "main:app", "--chdir /app", "-b 0.0.0.0:80", "-k aiohttp.worker.GunicornWebWorker", "--reload" ]
+CMD [ "gunicorn", "-w", "1", "main:app", "--chdir /app", "-b 0.0.0.0:80", "-k aiohttp.worker.GunicornWebWorker", "--reload" ]
